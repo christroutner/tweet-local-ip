@@ -19,12 +19,20 @@ Twitter.post(
     status: `My Local IP: ${myIp}`,
   },
   function(err, response) {
+    if (err) {
+      console.error("Error publishing tweet: ", err);
+      return;
+    }
+
     if (response) {
       console.log(`Tweet successful`);
     }
-
-    if (err) {
-      console.error("Error publishing tweet: ", err);
-    }
   }
 );
+
+// Create a timeout that lasts 10 minutes. This is just a dummy structure
+// so that this app doesn't exist right away. It gives the user a chance to
+// configure it in PM2.
+const myTimeout = setTimeout(function() {
+  console.log(`Timeout is complete.`);
+}, 1000 * 60 * 10);
