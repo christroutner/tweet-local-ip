@@ -2,9 +2,10 @@
   "name": "tweet-local-ip",
   "version": "1.0.0",
   "description": "A node.js app that tweets the devices local IP",
-  "main": "index.js",
+  "main": "tweet-local-ip.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node tweet-local-ip.js"
   },
   "author": "",
   "license": "ISC",
