@@ -1,11 +1,32 @@
 /*
+  Tweets the devices local IP.
+
+  This program also creates a 'dummy' Express application. This is so that
+  PM2 can load the app at startup. If the app exists, PM2 will keep trying to
+  reload it. An Express app doesn't exit, so it solves that problem.
 */
 
 "use strict";
 
 const twit = require("twit");
-var config = require("./config.js");
+
 const myLocalIp = require("my-local-ip");
+const express = require("express");
+
+// Handle situations where the app is started without a proper config file.
+try {
+  const config = require("./config.js");
+} catch (err) {
+  console.log(
+    `tweet-local-ip failed to start because the config file could not be found.
+    Please rename config-example.js to config.js and fill in the required Twitter
+    API values.`
+  );
+  process.exit(0);
+}
+
+const app = express();
+const port = 3125;
 
 const Twitter = new twit(config);
 
@@ -20,7 +41,13 @@ Twitter.post(
   },
   function(err, response) {
     if (err) {
-      console.error("Error publishing tweet: ", err);
+      if (err.code === 187) {
+        console.log(
+          `Tweet failed because twitter prevented a duplicate tweet. IP address hasn't changed.`
+        );
+      } else {
+        console.error("Error publishing tweet: ", err);
+      }
       return;
     }
 
@@ -30,9 +57,6 @@ Twitter.post(
   }
 );
 
-// Create a timeout that lasts 10 minutes. This is just a dummy structure
-// so that this app doesn't exist right away. It gives the user a chance to
-// configure it in PM2.
-const myTimeout = setTimeout(function() {
-  console.log(`Timeout is complete.`);
-}, 1000 * 60 * 10);
+/* Start up the Express web server */
+app.listen(process.env.PORT || port);
+console.log("Express started on port " + port);
