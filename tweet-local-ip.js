@@ -44,9 +44,12 @@ publishTweet();
 // Generates the string to be published to Twitter, containing an IP address
 // and time stamp.
 function generateString() {
-  const myLocalIp = require("my-local-ip");
-  const myIp = myLocalIp();
-  console.log(`myIp: ${myIp}`);
+  //const myLocalIp = require("my-local-ip");
+  //const myIp = myLocalIp();
+  //console.log(`myIp: ${myIp}`);
+
+  const iface = 'wlp1s0';
+  const myIp = require('local-ip')(iface);
 
   if (myIp === undefined) throw new Error("Local IP could not be determined.");
 
