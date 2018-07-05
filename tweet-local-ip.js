@@ -13,7 +13,6 @@
 
 const twit = require("twit");
 
-const myLocalIp = require("my-local-ip");
 const express = require("express");
 
 // Handle situations where the app is started without a proper config file.
@@ -45,7 +44,9 @@ publishTweet();
 // Generates the string to be published to Twitter, containing an IP address
 // and time stamp.
 function generateString() {
+  const myLocalIp = require("my-local-ip");
   const myIp = myLocalIp();
+  console.log(`myIp: ${myIp}`);
 
   if (myIp === undefined) throw new Error("Local IP could not be determined.");
 
