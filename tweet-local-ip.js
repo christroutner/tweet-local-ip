@@ -17,8 +17,9 @@ const myLocalIp = require("my-local-ip");
 const express = require("express");
 
 // Handle situations where the app is started without a proper config file.
+let config;
 try {
-  const config = require("./config.js");
+  config = require("./config.js");
 } catch (err) {
   console.log(
     `tweet-local-ip failed to start because the config file could not be found.
