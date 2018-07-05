@@ -36,31 +36,49 @@ const Twitter = new twit(config);
 
 const myIp = myLocalIp();
 
-console.log(`Tweeting local IP of ${myIp}`);
+const now = new Date();
 
-Twitter.post(
-  "statuses/update",
-  {
-    status: `My Local IP: ${myIp}`,
-  },
-  function(err, response) {
-    if (err) {
-      if (err.code === 187) {
-        console.log(
-          `Tweet failed because twitter prevented a duplicate tweet. IP address hasn't changed.`
-        );
-      } else {
-        console.error("Error publishing tweet: ", err);
-      }
-      return;
-    }
+console.log(`Tweeting local IP of ${myIp} at ${now.toLocaleString()}`);
 
-    if (response) {
-      console.log(`Tweet successful`);
-    }
-  }
-);
+const tweetStr = `My Local IP: ${myIp} at ${now.toLocaleString()}`;
 
 /* Start up the Express web server */
 app.listen(process.env.PORT || port);
 console.log("Express started on port " + port);
+
+publishTweet();
+
+function publishTweet() {
+  Twitter.post(
+    "statuses/update",
+    {
+      status: tweetStr,
+    },
+    function(err, response) {
+      if (err) {
+        if (err.code === 187) {
+          console.log(
+            `Tweet failed because twitter prevented a duplicate tweet. IP address hasn't changed.`
+          );
+        } else {
+          console.error("Error publishing tweet: ", err);
+          republishTweet();
+        }
+        return;
+      }
+
+      if (response) {
+        console.log(`Tweet successful`);
+      }
+    }
+  );
+}
+
+// Waits to retry republishing the tweet.
+function republishTweet() {
+  const tenMinutes = 1000 * 60 * 10;
+
+  setTimeout(function() {
+    publishTweet();
+  }, tenMinutes);
+}
